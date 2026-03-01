@@ -1,0 +1,338 @@
+# Connector for Winwing/Winctrl PFP 3N (737 CDU) to ProSim737
+
+I did not write the code, my AIsitant did :)
+
+I have tested the code to my satisfaction :)
+
+What works:
+1) Buttons
+2) Message, Fail etc indicators (ProSim [documentation](https://wiki.prosim-ar.com/index.php/Testfull/ProSim737SuiteManual) does not specify Offset, so it's not there, but I suspect it's an omission in the doc)
+3) Screen content, including colors.
+
+What doesn't (until I can connect it to the sim):
+1) Power and backlight management (power is easy, backlight management may require a separate plumbing into main prosim server)
+
+## How to Foobar AI into doing this for ya?
+
+JetBrains Raider's Junie Prompt:
+```JetBrains Raider's Junie Prompt
+Create a class called CduClient that:
+1) receives an XML stream from a network connection defined by the following specification:
+
+==========================================
+16.4.5.2 07.03.04.02 Output from ProSim737[bl] CDU
+ProSim CDU sends XML reports whenever something in the CDU changes. When a connection is made, all CDU states are reported. Possible reports are:
+
+
+
+CDU Power state                 :<power state=â€?true|falseâ€?/>
+
+Fail Light                                   :<fail state=â€?true|falseâ€?/>
+
+Message Light                       :<message state=â€?true|falseâ€?/>
+
+EXEC Light                               :<exec state=â€?true|falseâ€?/>
+
+Scratchpad content             :<scratchpad>[content]</scratchpad>
+
+Screen content
+
+   
+
+<screen>
+
+        <title>[Title of screen]</title>
+
+        <pageNumber>[Page number]</pageNumber>
+
+        <line1>[content]</line1>
+
+        <line2>[content]</line2>
+
+        <line3>[content]</line3>
+
+        <line4>[content]</line4>
+
+        <line5>[content]</line5>
+
+        <line6>[content]</line6>
+
+</screen>
+
+Each line in the CDU is broken up into an upper and a lower part.
+
+This is represented in each  <lineX> element:
+
+
+
+<line1>
+
+        <upper>[content]</upper>
+
+        <lower>[content]</lower>
+
+</line1>
+
+
+
+In the [content] blocks of <upper> and <lower> elements, you may encounter these tags:
+
+
+
+Text is in small font             :<small>[content]</small>
+
+Text is in large font              :<large>[content]</large>
+
+Text is cyan                             :<cyan>[content]</cyan>
+
+Text is green                          :<green>[content]</green>
+
+Text is magenta                                    :<magenta>[content]</magenta>
+
+
+
+Inside text strings, some special characters are used which should be replaced according to this table:
+
+
+Character in content	Character that should be shown in CDU
+` (backquote)	Â° (degree sign)
+#	â–¡ (box for input)
+ 
+==========================================
+Example 1:
+<power state="true" />
+<message state="false" />
+<exec state="false" />
+<fail state="true" />
+<scratchpad><![CDATA[]]></scratchpad>
+<screen>
+  <title>
+    <text size="large"><![CDATA[SIMULATOR CONTROL   1/ 2]]></text>
+  </title>
+  <pageNumber><![CDATA[]]></pageNumber>
+  <line1>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[*PAUSE]]><![CDATA[    ]]><![CDATA[FLIGHT FREEZE*]]></text>
+    </lower>
+  </line1>
+  <line2>
+    <upper>
+      <text size="small"><![CDATA[                ]]><![CDATA[SIM RATE]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<FUEL]]><![CDATA[      ]]><text size="small"><![CDATA[NORMAL]]></text><![CDATA[/]]><text size="small"><![CDATA[2X]]></text><![CDATA[/]]><text size="small"><![CDATA[4X]]></text><![CDATA[>]]></text>
+    </lower>
+  </line2>
+  <line3>
+    <upper>
+      <text size="small"><![CDATA[              ]]><![CDATA[FAULTS AND]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<PAX/CARGO]]><![CDATA[  ]]><![CDATA[MAINTENANCE>]]></text>
+    </lower>
+  </line3>
+  <line4>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<DOORS]]><![CDATA[           ]]><![CDATA[RADIOS>]]></text>
+    </lower>
+  </line4>
+  <line5>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<GROUND SERVICE]]><![CDATA[         ]]></text>
+    </lower>
+  </line5>
+  <line6>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<RESET FMS]]><![CDATA[              ]]></text>
+    </lower>
+  </line6>
+</screen>
+<fail state="true" />
+==========================================
+Example 2:
+<screen>
+  <title>
+    <text size="large">
+      <text color="cyan"><![CDATA[RTE LEGS]]></text>
+    </text>
+  </title>
+  <pageNumber><![CDATA[1/1]]></pageNumber>
+  <line1>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[                        ]]></text>
+    </lower>
+  </line1>
+  <line2>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[                        ]]></text>
+    </lower>
+  </line2>
+  <line3>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[                        ]]></text>
+    </lower>
+  </line3>
+  <line4>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[                        ]]></text>
+    </lower>
+  </line4>
+  <line5>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[                        ]]></text>
+    </lower>
+  </line5>
+  <line6>
+    <upper>
+      <text size="small"><![CDATA[--------HOLD AT---------]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[#####]]><![CDATA[              ]]><![CDATA[PPOS>]]></text>
+    </lower>
+  </line6>
+</screen>
+==========================================
+Example 3:
+<screen>
+  <title>
+    <text size="large"><![CDATA[     GROUND SERVICE     ]]></text>
+  </title>
+  <pageNumber><![CDATA[]]></pageNumber>
+  <line1>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[                        ]]></text>
+    </lower>
+  </line1>
+  <line2>
+    <upper>
+      <text size="small"><![CDATA[GND PWR]]><![CDATA[          ]]><![CDATA[GND AIR]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<]]><text size="small"><![CDATA[ON]]></text><![CDATA[/]]><text color="green"><![CDATA[OFF]]></text><![CDATA[          ]]><![CDATA[<]]><text size="small"><![CDATA[ON]]></text><![CDATA[/]]><text color="green"><![CDATA[OFF]]></text></text>
+    </lower>
+  </line2>
+  <line3>
+    <upper>
+      <text size="small"><![CDATA[TOW PIN]]><![CDATA[                 ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<]]><text color="green"><![CDATA[ON]]></text><![CDATA[/]]><text size="small"><![CDATA[OFF]]></text><![CDATA[                 ]]></text>
+    </lower>
+  </line3>
+  <line4>
+    <upper>
+      <text size="small"><![CDATA[       ]]><![CDATA[PUSHBACK]]><![CDATA[         ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<]]><text color="green"><![CDATA[C]]></text><![CDATA[/]]><text size="small"><![CDATA[L]]></text><![CDATA[/]]><text size="small"><![CDATA[R]]></text><![CDATA[             ]]><![CDATA[STOP>]]></text>
+    </lower>
+  </line4>
+  <line5>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[              ]]><![CDATA[REFUELING>]]></text>
+    </lower>
+  </line5>
+  <line6>
+    <upper>
+      <text size="small"><![CDATA[                        ]]></text>
+    </upper>
+    <lower>
+      <text size="large"><![CDATA[<RETURN]]><![CDATA[                 ]]></text>
+    </lower>
+  </line6>
+</screen>
+==========================================
+2) Takes IP address and port of the server to establish a network connection to.
+3) Can receives a stream of 0 or more XML fragments at the same time, as per specification.
+5) Does not buffer incoming or outgoing streams prioritizing communication latency over performance if required.
+6) Represents text information as a "Text Block" structure that:
+   a) Holds a color property if one was specified in the XML (as per specification AND examples)
+   b) Holds a size property if one was specified in the XML (as per specification AND examples)
+   c) If no color or size information was provided, its values should be set to null.
+   d) Note how text color and text size is specified by the examples and is different to specification.
+7) Create a representation as a List of Text Blocks for the following data:
+   a) Title
+   b) Each line's upper and lower content 
+8) Lines should be stored in an array called "Lines"
+9) Provide event source for user to subscribe to for changes to the following elements:
+==========================================
+<power />  -> Boolean change
+<message /> -> Boolean change
+<exec /> -> Boolean change
+<fail /> -> Boolean change
+<scratchpad /> -> String change
+<screen /> -> Screen change
+==========================================
+10) Store last received xml fragment in its raw form for debugging purposes
+11) Create a test server in the same project and directory to test with using examples above that continuously (once every 2 seconds) sends these updates; But do NOT run test server.
+12) For mapping special characters use the following table, noting that specification is incorrect and quote is used instead of backtick:
+=======================================
+# -> ☐ (U+2610)
+' -> °
+========================================
+13) CduClient should have a method called sendKey(string) that sends supplied string to the server.
+
+
+
+Create main application code in a separate file that:
+1) Imports McduDotNet library
+2) Have main method which takes either 3 or 0 parameters. Expected parameters are: prosimCDUIpAddress as string, prosimCDUPort as integer, winwingCDUProductId as hex integer.
+3) If no parameters are supplied, 
+  a) Print application's parameter pattern defined above.
+  b) Print all local winwing CDU devices to the console by querying them via CduFactory.FindLocalDevices() method. Ensure that D
+4) Find specified winwing CDU by finding a matching element (called hereon cdu) of CduFactory.FindLocalDevices(). Match by comparing elements UsbProductId property to winwingCDUProductId argument. If no device matches, print an error followed by device list (same as 3b) then exit
+5) Connect to ProsimCDU process by instantiating CduClient (called hereon cduClient) class with supplied prosimCDUIpAddress and prosimCDUPort parameters. Wait for connection to be established before proceeding.
+6) Subscribe to message, exec and fail events of cduClient by setting events Boolean value to a matching led via cdu.Leds.SetLed() method. Call cdu.RefreshLeds() after the value is set.
+7) Subscribe to scratchpad events of cduClient and write it via cdu.Output.BottomLine().ClearRow().Write() call to ensure that only bottom line is affected and is cleared first. Last step is to call cdu.RefreshDisplay();
+8) Has a static method called getKeyToSend that
+  a) Accepts key parameter of type Key defined by McduDotNet library
+  b) Maps all result strings: "LSKL1", "LSKL2", "LSKL3", "LSKL4", "LSKL5", "LSKL6", "LSKR1", "LSKR2", "LSKR3", "LSKR4", "LSKR5", "LSKR6", "EXEC", "CLB", "CLEAR", "CRZ", "DEL", "DEP_ARR", "DES", "FIX", "HOLD", "INIT_REF", "LEGS", "MENU", "N1", "NEXT", "PREV", "PROG", "RTE" to a unique Key value.
+     For example: Key.Clr -> "CLEAR", Key.PrevPage -> "PREV", Key.LineSelectLeft1 -> "LSKL1",  Key.LineSelectRight1 -> "LSKR1", etc.
+  c) By default return null
+9) Defines displayTextBlocks(blocks, compositor, bool centered = false) that
+  a) Has parameters: blocks is a list of CduClient textblock structures, compositor is an instance of Compositor defined in McduDotNet, Boolean centered false by default
+  c) For each block set compositor's color (compositor.Color method) to a color and size (compositors Large/Small methods) to match that of text block values. If text block does not have color or it does not match, use default color of White.
+  d) If centered is true, call compositor's .Centered method with text block's text; if centered is false call .Write with same.
+  e) Calls ClearRow() of compositor to ensure row/line is clear as a first operation.
+  f) Does not advance to the new line by calling any such methods on the compositor.
+10) Subscribe to cdu.KeyDown event to receive event keyDown. If keyDown.Key maps to a non null value by getKeyToSend(keyDown.Key) send its value to cduClient.sendKey, otherwise send the value of keyDown.Character. Send additional "\n" (new line) character at the end.
+11) Subscribe to screen change events and display:
+  a) title by calling displayTextBlocks() with centered=true
+  b) "page number" in white color by calling .Color() at the end of first row by calling compositor's RightToLeft() to move right followed by Write() to print "page number" followed by LeftToRight() to return to default setting.
+  c) Complete first line by moving down via compositor's NewLine()
+  d) Loop over Lines and display their Upper then Lower parts by calling displayTextBlocks() and NewLine()
+  e) As a first step, ensure that we are at the top left corner of the screen by calling TopLine() StartOfLine()
+```
