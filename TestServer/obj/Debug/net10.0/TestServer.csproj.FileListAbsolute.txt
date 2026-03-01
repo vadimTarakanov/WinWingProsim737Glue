@@ -1,0 +1,14 @@
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\bin\Debug\net10.0\TestServer.exe
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\bin\Debug\net10.0\TestServer.deps.json
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\bin\Debug\net10.0\TestServer.runtimeconfig.json
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\bin\Debug\net10.0\TestServer.dll
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\bin\Debug\net10.0\TestServer.pdb
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\TestServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\TestServer.AssemblyInfoInputs.cache
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\TestServer.AssemblyInfo.cs
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\TestServer.csproj.CoreCompileInputs.cache
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\TestServer.dll
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\refint\TestServer.dll
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\TestServer.pdb
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\TestServer.genruntimeconfig.cache
+C:\Users\vtara\RiderProjects\CDUGlue\TestServer\obj\Debug\net10.0\ref\TestServer.dll
